@@ -1,0 +1,37 @@
+{
+  "name": "runomine",
+  "version": "0.1.0",
+  "description": "The runomine command line: log in from the browser, set up cookieless analytics in a project in one command (`runomine init`), and read your numbers from the terminal.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "runomine": "bin/runomine.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "analytics",
+    "cookieless",
+    "privacy",
+    "cli",
+    "mcp",
+    "runomine"
+  ],
+  "homepage": "https://runomine.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/runomine/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/runomine/cli/issues"
+  }
+}

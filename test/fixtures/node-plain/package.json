@@ -1,0 +1,5 @@
+{
+  "name": "worker",
+  "homepage": "https://worker.example.org/docs",
+  "packageManager": "bun@1.2.0"
+}
