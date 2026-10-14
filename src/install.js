@@ -1,6 +1,6 @@
 // Installing the runomine library with the project's own package manager, from wherever the libraries are: the
-// registries once they're published, and until then each library's public GitHub repo, or (--from) a checkout of
-// the runomine repo or its git URL.
+// registries, each library's public GitHub repo (--from github), or (--from) a checkout of the runomine repo or its
+// git URL.
 
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
@@ -24,18 +24,18 @@ const isGit = (from) => /^(git@|git\+|ssh:\/\/|git:\/\/|github:)/.test(from) || 
 
 /**
  * Where the libraries come from.
- *  - "registry": Packagist, npm, PyPI, crates.io (once they're published).
+ *  - "registry": Packagist, npm, PyPI, crates.io.
  *  - "github": each library's public repo (PUBLIC_REPOS).
  *  - a git URL: the runomine repo itself (needs credentials that can read it).
  *  - a path: a checkout of the repo (its root or its sdks/ directory).
- *  - nothing: the checkout this CLI runs from, if it's inside one; else the public repos.
+ *  - nothing: the checkout this CLI runs from, if it's inside one; else the registries.
  */
 export function resolveSource(from, { cliDir = dirname(dirname(fileURLToPath(import.meta.url))) } = {}) {
   if (from === 'registry') return { kind: 'registry' };
   if (from === 'github') return { kind: 'public' };
   if (!from || from === true) {
     const root = resolve(cliDir, '..');
-    return existsSync(join(root, 'sdks', 'node', 'package.json')) ? { kind: 'path', root } : { kind: 'public' };
+    return existsSync(join(root, 'sdks', 'node', 'package.json')) ? { kind: 'path', root } : { kind: 'registry' };
   }
   if (isGit(from)) return { kind: 'git', url: from.replace(/^git\+(?=https?:|ssh:)/, '') };
   const path = resolve(from);

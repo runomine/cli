@@ -10,16 +10,15 @@ npx runomine init         # in your project: site, token, library, code, first e
 
 ## Install
 
-Not on npm yet. From this repository:
+From npm:
 
 ```sh
-npm install -g github:runomine/cli   # then: runomine …
+npm install -g runomine   # then: runomine …
 # or without installing
-npx github:runomine/cli init
+npx runomine init
 ```
 
-Publishing later: `npm publish` from the repo root (the package is `runomine`, `bin/runomine.js`; `files` keeps only
-`bin`, `src` and this README). Bump `version` in `package.json` first.
+Releases are published by `.github/workflows/release.yml` (npm trusted publishing): bump `version` in `package.json`.
 
 ## `runomine login`
 
@@ -59,8 +58,8 @@ Other flags: `--framework <laravel|next|express|django|fastapi|axum|actix|static
 
 ### Where the libraries come from (`--from`)
 
-The libraries aren't on Packagist, npm, PyPI or crates.io yet, so by default `init` installs each one straight from
-**its public GitHub repo**:
+By default `init` installs each library from its registry (Packagist, npm, PyPI, crates.io). `--from github` installs
+it straight from **its public GitHub repo** instead:
 
 | Language | Repo |
 |---|---|
@@ -71,15 +70,15 @@ The libraries aren't on Packagist, npm, PyPI or crates.io yet, so by default `in
 
 | `--from` | |
 |---|---|
-| (nothing) | the public repos (or, when the CLI runs from a checkout of the runomine monorepo, its `sdks/`) |
-| `github` | the public repos, always |
-| `registry` | the published packages: use this once they're out (it will become the default) |
+| (nothing) | the registries (or, when the CLI runs from a checkout of the runomine monorepo, its `sdks/`) |
+| `registry` | the registries, always |
+| `github` | the public repos |
 | `/path/to/runomine` | a checkout of the runomine monorepo (its root or its `sdks/`), for runomine's own development |
 | `git@…/runomine.git`, `https://…/runomine.git` | the runomine monorepo's git URL (your git credentials must read it) |
 
 How each package manager gets it:
 
-| | github (default) | registry | from a path | from a monorepo git URL |
+| | github | registry (default) | from a path | from a monorepo git URL |
 |---|---|---|---|---|
 | composer | vcs repository `https://github.com/runomine/runomine-php` + `composer require runomine/runomine-php:dev-main` | `composer require runomine/runomine-php` | path repository (`symlink: false`) + `composer require runomine/runomine-php:*@dev` | cloned to `~/.cache/runomine/repo`, then as a path |
 | npm, pnpm, yarn, bun | `add github:runomine/runomine-node` | `add @runomine/node` | `npm pack` into `vendor/`, then `add ./vendor/runomine-node-0.1.0.tgz` (commit it: CI installs it too) | same, from the clone |
@@ -87,8 +86,8 @@ How each package manager gets it:
 | pip | `runomine @ git+https://github.com/runomine/runomine-python.git`, into `.venv`/`venv` when there is one, and a line in `requirements.txt` | `pip install runomine` | the path, the same way | `runomine @ git+…#subdirectory=sdks/python` |
 | cargo | `cargo add runomine --git https://github.com/runomine/runomine-rust --features axum` | `cargo add runomine` | `cargo add runomine --path …` | `cargo add runomine --git …` |
 
-A path (composer, pip, uv, poetry, cargo) is only right on your machine: before deploying, switch to the public repos
-(`--from github`) or, once published, the registry. The vendored npm tarball works everywhere.
+A path (composer, pip, uv, poetry, cargo) is only right on your machine: before deploying, switch to the registry
+(`--from registry`) or the public repos (`--from github`). The vendored npm tarball works everywhere.
 
 ## Everything else
 

@@ -11,7 +11,7 @@ const cmds = (plan) => plan.steps.filter((s) => s.cmd).map((s) => shellLine(s.cm
 
 test('the source: this checkout by default, else the public repos; a path, a git URL, github or the registry', () => {
   assert.deepEqual(resolveSource(undefined), { kind: 'path', root: repo });
-  assert.deepEqual(resolveSource(undefined, { cliDir: tempDir() }), { kind: 'public' });
+  assert.deepEqual(resolveSource(undefined, { cliDir: tempDir() }), { kind: 'registry' });
   assert.deepEqual(resolveSource('github'), { kind: 'public' });
   assert.deepEqual(resolveSource(repo), { kind: 'path', root: repo });
   assert.deepEqual(resolveSource(join(repo, 'sdks')), { kind: 'path', root: repo });
