@@ -1,12 +1,25 @@
 // login (the browser approves a code: nothing to copy), logout, whoami.
 
 import { hostname } from 'node:os';
-import { ApiError } from '../api.js';
-import { DEFAULT_URL } from '../config.js';
+import { Api, ApiError } from '../api.js';
+import { baseUrl, DEFAULT_URL } from '../config.js';
 import { c, err, ok, openBrowser, out, sleep, spinner } from '../ui.js';
+
+/** Revokes a token on its server (DELETE /auth/token with it); false when it couldn't (already gone, unreachable). */
+async function revoke({ url, token }, fetch) {
+  try {
+    await new Api({ url, token, fetch }).delete('/auth/token');
+    return true;
+  } catch (e) {
+    if (e instanceof ApiError) return false;
+    throw e;
+  }
+}
 
 export async function login(ctx) {
   const { flags } = ctx.args;
+  // Logging in again replaces the saved token: the old one is revoked once the new one works, not left behind.
+  const previous = ctx.config.token ? { token: ctx.config.token, url: baseUrl({ url: ctx.config.url }, {}) } : null;
   const device = await ctx.api.startDevice(typeof flags.name === 'string' ? flags.name : `runomine CLI on ${hostname()}`);
   out(`Your code: ${c.bold(device.user_code)}`);
   out(`Approve it at ${c.cyan(device.verification_url_complete)}`);
@@ -26,6 +39,7 @@ export async function login(ctx) {
         const path = ctx.save({ url: ctx.url === DEFAULT_URL ? undefined : ctx.url, token, email: me.user.email });
         spin.stop();
         ok(`Logged in as ${c.bold(me.user.email)} ${c.dim(`(${ctx.url}; token saved in ${path})`)}`);
+        if (previous && previous.token !== token && (await revoke(previous, ctx.api.fetch))) out(c.dim('(The previous login on this machine is revoked.)'));
         return 0;
       } catch (e) {
         if (!(e instanceof ApiError)) throw e;

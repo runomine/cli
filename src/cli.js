@@ -31,7 +31,7 @@ ${c.bold('Revenue from your payment provider')}
   runomine integrations ls | connect stripe --key rk_live_… | backfill stripe | disconnect stripe
 
 ${c.bold('AI assistants')}
-  runomine mcp setup [--print]       The runomine MCP server in Claude Code (or the config for others)
+  runomine mcp setup [--print] [--rotate]   The runomine MCP server in Claude Code (or the config for others)
 
 A site is its id (site_…), name, slug or domain. RUNOMINE_URL points at another server; RUNOMINE_PAT logs in
 without the browser (CI); RUNOMINE_SITE picks the site.`;

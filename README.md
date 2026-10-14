@@ -25,8 +25,9 @@ Publishing later: `npm publish` from the repo root (the package is `runomine`, `
 
 The device flow (RFC 8628): the CLI shows a code and opens `https://runomine.com/cli/authorize?code=…`; you approve it
 signed in, and the CLI gets a personal access token of its own (named after the machine). It's saved in
-`~/.config/runomine/config.json` (`$XDG_CONFIG_HOME`, or `$RUNOMINE_CONFIG`), readable only by you. `runomine logout`
-revokes it on the server and removes it. Tokens are listed and revocable in the app, **API tokens**.
+`~/.config/runomine/config.json` (`$XDG_CONFIG_HOME`, or `$RUNOMINE_CONFIG`), readable only by you. Logging in again
+revokes the token it replaces. `runomine logout` revokes it on the server and removes it. Tokens are listed and
+revocable in the app, **API tokens**.
 
 `--no-open` prints the link instead of opening the browser; `--name` names the device.
 
@@ -99,7 +100,7 @@ runomine events tail [--site <site>] [--name purchase]     # events ls: once
 runomine marker add "Newsletter sent" [--at 2026-10-14T09:30] [--site <site>]
 runomine invite <email> [--site <site>] [--role member|admin|viewer] [--workspace <slug>]
 runomine integrations ls | connect stripe --key rk_live_… | backfill stripe | disconnect stripe [--site <site>]
-runomine mcp setup [--print] [--yes]
+runomine mcp setup [--print] [--rotate] [--yes]
 ```
 
 A site is its id (`site_…`), name, slug or domain; without `--site`, the one `init` or `sites use` picked, or your
@@ -110,6 +111,12 @@ Squeezy `api_key`, Shopify `access_token`, PayPal `client_secret`), `--secret` (
 `runomine mcp setup` makes a token just for the MCP client and, when `claude` is on the PATH, runs
 `claude mcp add --transport http --scope user runomine https://runomine.com/mcp --header "Authorization: Bearer …"`
 after asking. `--print` shows the Claude Code, Cursor and Claude Desktop configs instead.
+
+Running it again doesn't pile tokens up. When Claude Code already has the runomine server for this server URL and its
+token still works, nothing changes (`--rotate` gives it a new one anyway); otherwise its entry is replaced
+(`claude mcp remove` + `add`). The token is named after the client and the machine (`MCP (Claude Code) on <host>`,
+`MCP on <host>` with `--print`), and a new one replaces the previous one of that name: the server revokes it. So
+`--print` twice on the same machine leaves one token, and a client still using the first one must be updated.
 
 ## Environment
 

@@ -4,11 +4,12 @@ import { Api, listSites, matchSite } from './api.js';
 import { accessToken, baseUrl, loadConfig, saveConfig } from './config.js';
 import { canPrompt, select } from './ui.js';
 
-export function makeContext(args, { env = process.env, fetch = globalThis.fetch } = {}) {
+export function makeContext(args, { env = process.env, fetch = globalThis.fetch, tools = null } = {}) {
   const config = loadConfig(env);
   const url = typeof args.flags.url === 'string' ? args.flags.url.replace(/\/+$/, '') : baseUrl(config, env);
   const ctx = {
     args,
+    tools, // tests swap the external commands (e.g. `claude`) for fakes: { onPath, run }
     env,
     config,
     url,
