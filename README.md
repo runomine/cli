@@ -16,6 +16,8 @@ From npm:
 npm install -g runomine   # then: runomine …
 # or without installing
 npx runomine init
+# or straight from GitHub
+npx github:runomine/cli init
 ```
 
 Releases are published by `.github/workflows/release.yml` (npm trusted publishing): bump `version` in `package.json`.
