@@ -1,6 +1,6 @@
 {
   "name": "runomine",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The runomine command line: log in from the browser, set up cookieless analytics in a project in one command (`runomine init`), and read your numbers from the terminal.",
   "license": "MIT",
   "type": "module",
