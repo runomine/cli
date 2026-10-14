@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { detect } from '../src/detect.js';
@@ -8,6 +8,10 @@ import { copyFixture, fixtures, tempDir } from './helpers.js';
 
 const repo = resolve(new URL('../..', import.meta.url).pathname);
 const cmds = (plan) => plan.steps.filter((s) => s.cmd).map((s) => shellLine(s.cmd));
+// The tarball is named after sdks/node's version (install.js reads it the same way; 0.1.0 when there is no sdks/,
+// as in the CLI's own repository).
+const nodeManifest = join(repo, 'sdks', 'node', 'package.json');
+const nodeTarball = `runomine-node-${existsSync(nodeManifest) ? JSON.parse(readFileSync(nodeManifest, 'utf8')).version : '0.1.0'}.tgz`;
 
 test('the source: this checkout by default, else the public repos; a path, a git URL, github or the registry', () => {
   assert.deepEqual(resolveSource(undefined), { kind: 'path', root: repo });
@@ -35,9 +39,9 @@ test('node: the tarball vendored, added with the project package manager', () =>
   const plan = installPlan(detect(dir), { kind: 'path', root: repo });
   assert.deepEqual(cmds(plan), [
     `npm pack ${repo}/sdks/node --pack-destination ${dir}/vendor --silent`,
-    'pnpm add ./vendor/runomine-node-0.1.0.tgz',
+    `pnpm add ./vendor/${nodeTarball}`,
   ]);
-  assert.equal(cmds(installPlan(detect(`${fixtures}express`), { kind: 'path', root: repo }))[1], 'yarn add file:./vendor/runomine-node-0.1.0.tgz');
+  assert.equal(cmds(installPlan(detect(`${fixtures}express`), { kind: 'path', root: repo }))[1], `yarn add file:./vendor/${nodeTarball}`);
   assert.deepEqual(cmds(installPlan(detect(`${fixtures}node-plain`), { kind: 'registry' })), ['bun add @runomine/node']);
   // From git: cloned first (composer and npm need the files).
   const fromGit = installPlan(detect(dir), { kind: 'git', url: 'https://example.com/runomine.git' }, { env: { XDG_CACHE_HOME: '/cache' } });
